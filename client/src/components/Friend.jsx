@@ -13,8 +13,6 @@ const Friend = ({
     subtitle,
     userPicturePath,
 }) => {
-    const time = new Date();
-    console.log(time);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { _id } = useSelector((state) => state.user);
