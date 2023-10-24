@@ -6,7 +6,6 @@
     "npm": "10.1.0"
   },
   "private": true,
-  "proxy": "https://sociopedia-backend-9jo5.onrender.com",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
