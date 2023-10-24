@@ -108,7 +108,7 @@ const PostWidget = ({
                             marginTop: "0.75rem",
                         }}
                         crossOrigin="anonymous"
-                        src={`/assets/${picturePath}`}
+                        src={`https://sociopedia-backend-9jo5.onrender.com/assets/${picturePath}`}
                     />
                 )}
             </FlexBetween>
