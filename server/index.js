@@ -21,6 +21,13 @@ import { verifyToken } from "./middleware/auth.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+var corsOptions = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+};
+
 const app = express();
 app.use(express.json());
 app.use(helmet());
@@ -28,7 +35,7 @@ app.use(helmet.crossOriginResourcePolicy({ origin: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // FILE STORAGE
