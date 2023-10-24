@@ -76,10 +76,13 @@ const Form = () => {
             formData.append(value, values[value]);
         }
         formData.append("picturePath", values.picture.name);
-        const savedUserResponse = await fetch("/auth/register", {
-            method: "POST",
-            body: formData,
-        });
+        const savedUserResponse = await fetch(
+            "https://sociopedia-backend-9jo5.onrender.com/auth/register",
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
         const savedUser = await savedUserResponse.json();
         onSubmitProps.resetForm();
 
@@ -112,11 +115,14 @@ const Form = () => {
     };
 
     const forgetPassword = async (values, onSubmitProps) => {
-        const forgetPasswordResponse = await fetch("/auth/forgetPasswordMail", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(values),
-        });
+        const forgetPasswordResponse = await fetch(
+            "https://sociopedia-backend-9jo5.onrender.com/auth/forgetPasswordMail",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
+            }
+        );
         const data = await forgetPasswordResponse.json();
         onSubmitProps.resetForm();
         if (data) {

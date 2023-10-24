@@ -11,20 +11,26 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     useEffect(() => {
         if (isProfile) {
             const getUserPosts = async () => {
-                const response = await fetch(`/posts/${userId}`, {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await fetch(
+                    `https://sociopedia-backend-9jo5.onrender.com/posts/${userId}`,
+                    {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
                 const data = await response.json();
                 dispatch(setPosts({ posts: data }));
             };
             getUserPosts();
         } else {
             const getPosts = async () => {
-                const response = await fetch("/posts/", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await fetch(
+                    "https://sociopedia-backend-9jo5.onrender.com/posts/",
+                    {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
                 const data = await response.json();
                 dispatch(setPosts({ posts: data }));
             };

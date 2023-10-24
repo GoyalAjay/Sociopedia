@@ -30,13 +30,16 @@ const Friend = ({
     const isFriend = friends.find((friend) => friend._id === friendId);
 
     const patchFriend = async () => {
-        const response = await fetch(`/users/${_id}/${friendId}`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await fetch(
+            `https://sociopedia-backend-9jo5.onrender.com/users/${_id}/${friendId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
         const data = await response.json();
         dispatch(setFriends({ friends: data }));
         window.location.reload(true);
@@ -48,7 +51,9 @@ const Friend = ({
                 <UserImage image={userPicturePath} size="55px" />
                 <Box
                     onClick={() => {
-                        navigate(`/user/${friendId}`);
+                        navigate(
+                            `https://sociopedia-backend-9jo5.onrender.com/user/${friendId}`
+                        );
                         navigate(0);
                     }}
                 >

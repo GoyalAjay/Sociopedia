@@ -11,18 +11,21 @@ const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
     const token = useSelector((state) => state.token);
 
     const handleCommentPost = async () => {
-        const response = await fetch(`/comments/${postId}`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                postId: postId,
-                userId: loggedInUserId,
-                description: comment,
-            }),
-        });
+        const response = await fetch(
+            `https://sociopedia-backend-9jo5.onrender.com/comments/${postId}`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    postId: postId,
+                    userId: loggedInUserId,
+                    description: comment,
+                }),
+            }
+        );
         const post = await response.json();
         dispatch(setPost({ post }));
         setComment("");

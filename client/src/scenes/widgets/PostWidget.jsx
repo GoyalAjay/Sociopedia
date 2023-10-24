@@ -58,23 +58,29 @@ const PostWidget = ({
     const primary = palette.primary.main;
 
     const patchLike = async () => {
-        const response = await fetch(`/posts/${postId}/like`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: loggedInUserId }),
-        });
+        const response = await fetch(
+            `https://sociopedia-backend-9jo5.onrender.com/posts/${postId}/like`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId: loggedInUserId }),
+            }
+        );
         const updatedPost = await response.json();
         dispatch(setPost({ post: updatedPost }));
     };
 
     const getPost = async () => {
-        const response = await fetch(`/posts/${postId}`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+            `https://sociopedia-backend-9jo5.onrender.com/posts/${postId}`,
+            {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+            }
+        );
         const data = await response.json();
         dispatch(setPost({ post: data }));
     };
@@ -229,7 +235,7 @@ const PostWidget = ({
                                         marginTop: "0.75rem",
                                     }}
                                     crossOrigin="anonymous"
-                                    src={`http://localhost:3001/assets/${picturePath}`}
+                                    src={`https://sociopedia-backend-9jo5.onrender.com/assets/${picturePath}`}
                                 />
                             )}
                             <FlexBetween mt="0.25rem">

@@ -16,10 +16,13 @@ const UserPage = () => {
 
     useEffect(() => {
         const getUser = async () => {
-            const response = await fetch(`/users/${userId}`, {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await fetch(
+                `https://sociopedia-backend-9jo5.onrender.com/users/${userId}`,
+                {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
             const data = await response.json();
             setUser(data);
         };
