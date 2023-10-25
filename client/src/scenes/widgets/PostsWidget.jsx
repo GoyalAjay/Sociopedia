@@ -12,7 +12,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         if (isProfile) {
             const getUserPosts = async () => {
                 const response = await fetch(
-                    `https://sociopedia-backend-9jo5.onrender.com/posts/${userId}`,
+                    `${process.env.REACT_APP_SERVER_URL}/posts/${userId}`,
                     {
                         method: "GET",
                         headers: { Authorization: `Bearer ${token}` },
@@ -25,7 +25,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         } else {
             const getPosts = async () => {
                 const response = await fetch(
-                    "https://sociopedia-backend-9jo5.onrender.com/posts/",
+                    `${process.env.REACT_APP_SERVER_URL}/posts/`,
                     {
                         method: "GET",
                         headers: { Authorization: `Bearer ${token}` },
@@ -52,7 +52,6 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                     userPicturePath,
                     likes,
                     comments,
-                    createdAt,
                 }) => (
                     <PostWidget
                         key={_id}

@@ -29,7 +29,7 @@ const Friend = ({
 
     const patchFriend = async () => {
         const response = await fetch(
-            `https://sociopedia-backend-9jo5.onrender.com/users/${_id}/${friendId}`,
+            `${process.env.REACT_APP_SERVER_URL}/users/${_id}/${friendId}`,
             {
                 method: "PATCH",
                 headers: {
@@ -49,9 +49,7 @@ const Friend = ({
                 <UserImage image={userPicturePath} size="55px" />
                 <Box
                     onClick={() => {
-                        navigate(
-                            `https://sociopedia-backend-9jo5.onrender.com/user/${friendId}`
-                        );
+                        navigate(`/user/${friendId}`);
                         navigate(0);
                     }}
                 >

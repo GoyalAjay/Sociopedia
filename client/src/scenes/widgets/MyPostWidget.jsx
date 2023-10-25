@@ -16,6 +16,7 @@ import {
     Button,
     IconButton,
     useMediaQuery,
+    Stack,
 } from "@mui/material";
 
 import Dropzone from "react-dropzone";
@@ -27,13 +28,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 
 const MyPostWidget = ({ picturePath }) => {
-    const dispatch = useDispatch();
     const [isImage, setIsImage] = useState(false);
     const [image, setImage] = useState(null);
     const [post, setPost] = useState("");
     const { palette } = useTheme();
     const { _id } = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
+    const dispatch = useDispatch();
+    const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
     const mediumMain = palette.neutral.mediumMain;
     const medium = palette.neutral.medium;
@@ -47,7 +49,7 @@ const MyPostWidget = ({ picturePath }) => {
             formData.append("picturePath", image.name);
         }
         const response = await fetch(
-            "https://sociopedia-backend-9jo5.onrender.com/posts",
+            `${process.env.REACT_APP_SERVER_URL}/posts`,
             {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },
@@ -158,7 +160,13 @@ const MyPostWidget = ({ picturePath }) => {
                     </>
                 ) : (
                     <FlexBetween gap="0.25rem">
-                        <MoreHorizOutlined sx={{ color: mediumMain }} />
+                        <IconButton
+                            onClick={() =>
+                                setIsMobileMenuToggled(!isMobileMenuToggled)
+                            }
+                        >
+                            <MoreHorizOutlined sx={{ color: mediumMain }} />
+                        </IconButton>
                     </FlexBetween>
                 )}
                 <Button
@@ -178,6 +186,37 @@ const MyPostWidget = ({ picturePath }) => {
                     POST
                 </Button>
             </FlexBetween>
+            {!isNonMobileScreens && isMobileMenuToggled && (
+                <Stack
+                    mt="1rem"
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="stretch"
+                    spacing={2}
+                    gap="0.25rem"
+                >
+                    <FlexBetween
+                        gap="0.25rem"
+                        sx={{ justifyContent: "flex-start" }}
+                    >
+                        <GifBoxOutlined sx={{ color: mediumMain }} />
+                        <Typography color={mediumMain}>Clip</Typography>
+                    </FlexBetween>
+
+                    <FlexBetween gap="0.25rem">
+                        <AttachFileOutlined sx={{ color: mediumMain }} />
+                        <Typography color={mediumMain}>Attachment</Typography>
+                    </FlexBetween>
+
+                    <FlexBetween
+                        gap="0.25rem"
+                        sx={{ justifyContent: "flex-end" }}
+                    >
+                        <MicOutlined sx={{ color: mediumMain }} />
+                        <Typography color={mediumMain}>Audio</Typography>
+                    </FlexBetween>
+                </Stack>
+            )}
         </WidgetWrapper>
     );
 };

@@ -6,6 +6,7 @@ const GetComment = ({ commentId, name, description, userPicturePath }) => {
     const { palette } = useTheme();
     const main = palette.neutral.main;
     const primaryDark = palette.primary.dark;
+    const light = palette.neutral.light;
     return (
         <FlexBetween
             key={commentId}
@@ -18,7 +19,7 @@ const GetComment = ({ commentId, name, description, userPicturePath }) => {
                 m="0rem 1rem"
                 p="0.4rem 1rem"
                 sx={{
-                    backgroundColor: "#e4e6eb",
+                    backgroundColor: light,
                     borderRadius: "0.5rem",
                 }}
             >

@@ -25,7 +25,7 @@ const ResetForm = () => {
 
     const PasswordReset = async (values, onSubmitProps) => {
         const passwordResetResponse = await fetch(
-            `/auth/passwordReset/${randomId}`,
+            `${process.env.REACT_APP_SERVER_URL}/auth/passwordReset/${randomId}`,
             {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -51,8 +51,6 @@ const ResetForm = () => {
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                setFieldValue,
-                resetForm,
             }) => (
                 <form onSubmit={handleSubmit}>
                     <Box

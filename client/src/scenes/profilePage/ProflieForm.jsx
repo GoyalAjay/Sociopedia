@@ -51,7 +51,7 @@ const ProfileForm = () => {
 
     const profileUpdate = async (values) => {
         const profileUpdateResponse = await fetch(
-            `/auth/profileUpdate/${userId}`,
+            `${process.env.REACT_APP_SERVER_URL}/auth/profileUpdate/${userId}`,
             {
                 method: "PATCH",
                 headers: {
@@ -110,8 +110,6 @@ const ProfileForm = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
-                    setFieldValue,
-                    resetForm,
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <Box

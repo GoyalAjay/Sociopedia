@@ -30,7 +30,7 @@ const UserWidget = ({ userId, picturePath }) => {
 
     const getUser = async () => {
         const response = await fetch(
-            `https://sociopedia-backend-9jo5.onrender.com/users/${userId}`,
+            `${process.env.REACT_APP_SERVER_URL}/users/${userId}`,
             {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -64,13 +64,10 @@ const UserWidget = ({ userId, picturePath }) => {
             <FlexBetween gap="0.5rem" pb="1.1rem">
                 <FlexBetween
                     gap="1rem"
-                    onClick={() =>
-                        navigate(
-                            `https://sociopedia-backend-9jo5.onrender.com/user/${userId}`
-                        )
-                    }
+                    onClick={() => navigate(`/user/${userId}`)}
                 >
                     <UserImage image={picturePath} />
+
                     <Box>
                         <Typography
                             variant="h4"

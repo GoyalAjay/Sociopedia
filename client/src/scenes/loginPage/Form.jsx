@@ -75,9 +75,12 @@ const Form = () => {
         for (let value in values) {
             formData.append(value, values[value]);
         }
-        formData.append("picturePath", values.picture.name);
+        if (values.picture) {
+            formData.append("picturePath", values.picture.name);
+        }
+
         const savedUserResponse = await fetch(
-            "https://sociopedia-backend-9jo5.onrender.com/auth/register",
+            `${process.env.REACT_APP_SERVER_URL}/auth/register`,
             {
                 method: "POST",
                 body: formData,
@@ -92,8 +95,9 @@ const Form = () => {
     };
 
     const login = async (values, onSubmitProps) => {
+        console.log(process.env.REACT_APP_SERVER_URL);
         const loggedInResponse = await fetch(
-            "https://sociopedia-backend-9jo5.onrender.com/auth/login",
+            `${process.env.REACT_APP_SERVER_URL}/auth/login`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -116,7 +120,7 @@ const Form = () => {
 
     const forgetPassword = async (values, onSubmitProps) => {
         const forgetPasswordResponse = await fetch(
-            "https://sociopedia-backend-9jo5.onrender.com/auth/forgetPasswordMail",
+            `${process.env.REACT_APP_SERVER_URL}/auth/forgetPasswordMail`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -412,6 +416,7 @@ const Form = () => {
                             sx={{
                                 textDecoration: "underline",
                                 color: palette.primary.main,
+                                width: "50%",
                                 "&:hover": {
                                     cursor: "pointer",
                                     color: palette.primary.dark,

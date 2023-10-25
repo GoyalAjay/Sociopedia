@@ -9,10 +9,11 @@ const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
     const dispatch = useDispatch();
     const { palette } = useTheme();
     const token = useSelector((state) => state.token);
+    const loggedInUser = useSelector((state) => state.user);
 
     const handleCommentPost = async () => {
         const response = await fetch(
-            `https://sociopedia-backend-9jo5.onrender.com/comments/${postId}`,
+            `${process.env.REACT_APP_SERVER_URL}/comments/${postId}`,
             {
                 method: "POST",
                 headers: {
@@ -34,7 +35,7 @@ const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
 
     return (
         <>
-            <UserImage image={userPicturePath} />
+            <UserImage image={loggedInUser.picturePath} />
             <InputBase
                 placeholder="Write a comment..."
                 onChange={(event) => setComment(event.target.value)}

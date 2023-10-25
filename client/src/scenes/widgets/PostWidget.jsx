@@ -59,7 +59,7 @@ const PostWidget = ({
 
     const patchLike = async () => {
         const response = await fetch(
-            `https://sociopedia-backend-9jo5.onrender.com/posts/${postId}/like`,
+            `${process.env.REACT_APP_SERVER_URL}/posts/${postId}/like`,
             {
                 method: "PATCH",
                 headers: {
@@ -75,7 +75,7 @@ const PostWidget = ({
 
     const getPost = async () => {
         const response = await fetch(
-            `https://sociopedia-backend-9jo5.onrender.com/posts/${postId}`,
+            `${process.env.REACT_APP_SERVER_URL}/posts/${postId}`,
             {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
@@ -108,7 +108,7 @@ const PostWidget = ({
                             marginTop: "0.75rem",
                         }}
                         crossOrigin="anonymous"
-                        src={`https://sociopedia-backend-9jo5.onrender.com/assets/${picturePath}`}
+                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
                     />
                 )}
             </FlexBetween>
@@ -188,135 +188,273 @@ const PostWidget = ({
                 )
             ) : undefined}
             {/* MODAL */}
-            <FlexBetween>
-                <BootstrapDialog
-                    aria-labelledby="title"
-                    open={open}
-                    onClose={handleClose}
-                    closeAfterTransition
-                >
-                    <DialogTitle sx={{ m: 0, p: 2 }} id="title">
-                        <FlexBetween sx={{ justifyContent: "center" }}>
-                            <Typography id="title" variant="h4" component="h2">
-                                {name}'s Post
-                            </Typography>
-                        </FlexBetween>
-                    </DialogTitle>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleClose}
-                        sx={{
-                            position: "absolute",
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
+            {palette.mode === "dark" ? (
+                <FlexBetween sx={{ backgroundColor: "#1a1a1a" }}>
+                    <BootstrapDialog
+                        aria-labelledby="title"
+                        open={open}
+                        onClose={handleClose}
+                        closeAfterTransition
                     >
-                        <CloseIcon />
-                    </IconButton>
-                    <DialogContent dividers>
-                        <Typography id="transition-modal-description">
-                            <Friend
-                                friendId={postUserId}
-                                name={name}
-                                subtitle={location}
-                                userPicturePath={userPicturePath}
-                            />
-                            <Typography color={main} sx={{ mt: "1rem" }}>
-                                {description}
-                            </Typography>
-                            {picturePath && (
-                                <img
-                                    width="100%"
-                                    height="auto"
-                                    alt="post"
-                                    style={{
-                                        borderRadius: "0.75rem",
-                                        marginTop: "0.75rem",
-                                    }}
-                                    crossOrigin="anonymous"
-                                    src={`https://sociopedia-backend-9jo5.onrender.com/assets/${picturePath}`}
-                                />
-                            )}
-                            <FlexBetween mt="0.25rem">
-                                <FlexBetween gap="1rem">
-                                    <FlexBetween gap="0.3rem">
-                                        <IconButton onClick={patchLike}>
-                                            {isLiked ? (
-                                                <FavoriteOutlined
-                                                    sx={{
-                                                        color: primary,
-                                                    }}
-                                                />
-                                            ) : (
-                                                <FavoriteBorderOutlined />
-                                            )}
-                                        </IconButton>
-                                        <Typography>{likeCount}</Typography>
-                                    </FlexBetween>
-                                    <FlexBetween gap="0.3rem">
-                                        <IconButton
-                                            onClick={getPost}
-                                        ></IconButton>
-                                    </FlexBetween>
-                                    {/* COMMENTS */}
-                                    <FlexBetween gap="0.3rem">
-                                        <IconButton>
-                                            <ChatBubbleOutlineOutlined />
-                                        </IconButton>
-                                    </FlexBetween>
-                                </FlexBetween>
-                                <IconButton>
-                                    <ShareOutlined />
-                                </IconButton>
+                        <DialogTitle sx={{ m: 0, p: 2 }} id="title">
+                            <FlexBetween sx={{ justifyContent: "center" }}>
+                                <Typography
+                                    id="title"
+                                    variant="h4"
+                                    component="h2"
+                                >
+                                    {name}'s Post
+                                </Typography>
                             </FlexBetween>
-                        </Typography>
-                        <Stack
-                            id="transition-modal-footer"
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="stretch"
-                            spacing={2}
-                            gap="0.25rem"
+                        </DialogTitle>
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: "absolute",
+                                right: 8,
+                                top: 8,
+                                color: palette.neutral.grey,
+                            }}
                         >
-                            <Divider />
-                            {comments.map(
-                                ({
-                                    _id,
-                                    firstName,
-                                    lastName,
-                                    description,
-                                    userPicturePath,
-                                }) => (
-                                    <GetComment
-                                        key={_id}
-                                        commentId={_id}
-                                        name={`${firstName} ${lastName}`}
-                                        description={description}
-                                        userPicturePath={userPicturePath}
+                            <CloseIcon />
+                        </IconButton>
+                        <DialogContent dividers>
+                            <Typography id="transition-modal-description">
+                                <Friend
+                                    friendId={postUserId}
+                                    name={name}
+                                    subtitle={location}
+                                    userPicturePath={userPicturePath}
+                                />
+                                <Typography
+                                    color={main}
+                                    sx={{ mt: "1rem", fontSize: "1.75rem" }}
+                                >
+                                    {description}
+                                </Typography>
+                                {picturePath && (
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        alt="post"
+                                        style={{
+                                            borderRadius: "0.75rem",
+                                            marginTop: "0.75rem",
+                                        }}
+                                        crossOrigin="anonymous"
+                                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
                                     />
-                                )
-                            )}
-                            <FlexBetween gap="0.25rem" mt="1rem">
+                                )}
+                                <FlexBetween mt="0.25rem">
+                                    <FlexBetween gap="1rem">
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton onClick={patchLike}>
+                                                {isLiked ? (
+                                                    <FavoriteOutlined
+                                                        sx={{
+                                                            color: primary,
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <FavoriteBorderOutlined />
+                                                )}
+                                            </IconButton>
+                                            <Typography>{likeCount}</Typography>
+                                        </FlexBetween>
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton
+                                                onClick={getPost}
+                                            ></IconButton>
+                                        </FlexBetween>
+                                        {/* COMMENTS */}
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton>
+                                                <ChatBubbleOutlineOutlined />
+                                                <Typography ml="0.2rem">
+                                                    Comment
+                                                </Typography>
+                                            </IconButton>
+                                        </FlexBetween>
+                                    </FlexBetween>
+                                    <IconButton>
+                                        <ShareOutlined />
+                                    </IconButton>
+                                </FlexBetween>
+                            </Typography>
+                            <Stack
+                                id="transition-modal-footer"
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="stretch"
+                                spacing={2}
+                                gap="0.25rem"
+                            >
+                                <Divider />
+                                {comments.map(
+                                    ({
+                                        _id,
+                                        firstName,
+                                        lastName,
+                                        description,
+                                        userPicturePath,
+                                    }) => (
+                                        <GetComment
+                                            key={_id}
+                                            commentId={_id}
+                                            name={`${firstName} ${lastName}`}
+                                            description={description}
+                                            userPicturePath={userPicturePath}
+                                        />
+                                    )
+                                )}
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions sx={{ justifyContent: "flex-start" }}>
+                            <FlexBetween gap="0.25rem" sx={{ width: "900px" }}>
                                 <InputComment
                                     postId={postId}
                                     loggedInUserId={loggedInUserId}
                                     userPicturePath={userPicturePath}
                                 />
                             </FlexBetween>
-                        </Stack>
-                    </DialogContent>
-                    <DialogActions sx={{ justifyContent: "flex-start" }}>
-                        <FlexBetween gap="0.25rem" sx={{ width: "900px" }}>
-                            <InputComment
-                                postId={postId}
-                                loggedInUserId={loggedInUserId}
-                                userPicturePath={userPicturePath}
-                            />
-                        </FlexBetween>
-                    </DialogActions>
-                </BootstrapDialog>
-            </FlexBetween>
+                        </DialogActions>
+                    </BootstrapDialog>
+                </FlexBetween>
+            ) : (
+                <FlexBetween>
+                    <BootstrapDialog
+                        aria-labelledby="title"
+                        open={open}
+                        onClose={handleClose}
+                        closeAfterTransition
+                    >
+                        <DialogTitle sx={{ m: 0, p: 2 }} id="title">
+                            <FlexBetween sx={{ justifyContent: "center" }}>
+                                <Typography
+                                    id="title"
+                                    variant="h4"
+                                    component="h2"
+                                >
+                                    {name}'s Post
+                                </Typography>
+                            </FlexBetween>
+                        </DialogTitle>
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: "absolute",
+                                right: 8,
+                                top: 8,
+                                color: palette.neutral.grey,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        <DialogContent dividers>
+                            <Typography id="transition-modal-description">
+                                <Friend
+                                    friendId={postUserId}
+                                    name={name}
+                                    subtitle={location}
+                                    userPicturePath={userPicturePath}
+                                />
+                                <Typography
+                                    color={main}
+                                    sx={{ mt: "1rem", fontSize: "1.75rem" }}
+                                >
+                                    {description}
+                                </Typography>
+                                {picturePath && (
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        alt="post"
+                                        style={{
+                                            borderRadius: "0.75rem",
+                                            marginTop: "0.75rem",
+                                        }}
+                                        crossOrigin="anonymous"
+                                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
+                                    />
+                                )}
+                                <FlexBetween mt="0.25rem">
+                                    <FlexBetween gap="1rem">
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton onClick={patchLike}>
+                                                {isLiked ? (
+                                                    <FavoriteOutlined
+                                                        sx={{
+                                                            color: primary,
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <FavoriteBorderOutlined />
+                                                )}
+                                            </IconButton>
+                                            <Typography>{likeCount}</Typography>
+                                        </FlexBetween>
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton
+                                                onClick={getPost}
+                                            ></IconButton>
+                                        </FlexBetween>
+                                        {/* COMMENTS */}
+                                        <FlexBetween gap="0.3rem">
+                                            <IconButton>
+                                                <ChatBubbleOutlineOutlined />
+                                                <Typography ml="0.2rem">
+                                                    Comment
+                                                </Typography>
+                                            </IconButton>
+                                        </FlexBetween>
+                                    </FlexBetween>
+                                    <IconButton>
+                                        <ShareOutlined />
+                                    </IconButton>
+                                </FlexBetween>
+                            </Typography>
+                            <Stack
+                                id="transition-modal-footer"
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="stretch"
+                                spacing={2}
+                                gap="0.25rem"
+                            >
+                                <Divider />
+                                {comments.map(
+                                    ({
+                                        _id,
+                                        firstName,
+                                        lastName,
+                                        description,
+                                        userPicturePath,
+                                    }) => (
+                                        <GetComment
+                                            key={_id}
+                                            commentId={_id}
+                                            name={`${firstName} ${lastName}`}
+                                            description={description}
+                                            userPicturePath={userPicturePath}
+                                        />
+                                    )
+                                )}
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions sx={{ justifyContent: "flex-start" }}>
+                            <FlexBetween gap="0.25rem" sx={{ width: "900px" }}>
+                                <InputComment
+                                    postId={postId}
+                                    loggedInUserId={loggedInUserId}
+                                    userPicturePath={userPicturePath}
+                                />
+                            </FlexBetween>
+                        </DialogActions>
+                    </BootstrapDialog>
+                </FlexBetween>
+            )}
         </WidgetWrapper>
     );
 };
