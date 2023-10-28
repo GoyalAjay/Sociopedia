@@ -10,7 +10,7 @@ const UserImage = ({ image, size = "60px" }) => {
                     width={size}
                     height={size}
                     alt="user"
-                    src={`${process.env.REACT_APP_SERVER_URL}/assets/${image}`}
+                    src={`${image}`}
                 />
             ) : (
                 <img
@@ -19,7 +19,7 @@ const UserImage = ({ image, size = "60px" }) => {
                     width={size}
                     height={size}
                     alt="user"
-                    src={`${process.env.REACT_APP_SERVER_URL}/assets/default.png`}
+                    src="https://sociopediaimages.s3.ap-south-1.amazonaws.com/uploads/default.png"
                 />
             )}
         </Box>

@@ -86,6 +86,7 @@ const Form = () => {
                 body: formData,
             }
         );
+        console.log(savedUserResponse);
         const savedUser = await savedUserResponse.json();
         onSubmitProps.resetForm();
 
@@ -95,7 +96,6 @@ const Form = () => {
     };
 
     const login = async (values, onSubmitProps) => {
-        console.log(process.env.REACT_APP_SERVER_URL);
         const loggedInResponse = await fetch(
             `${process.env.REACT_APP_SERVER_URL}/auth/login`,
             {

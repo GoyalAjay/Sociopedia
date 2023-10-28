@@ -1,12 +1,14 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
-
+import { uploadFile } from "../s3Service.js";
 // CREATE
 
 export const createPost = async (req, res) => {
     try {
-        const { userId, description, picturePath } = req.body;
+        const { userId, description } = req.body;
         const user = await User.findById(userId);
+        const file = req.file;
+        const result = await uploadFile(file);
         const newPost = new Post({
             userId,
             firstName: user.firstName,
@@ -14,7 +16,7 @@ export const createPost = async (req, res) => {
             location: user.location,
             description,
             userPicturePath: user.picturePath,
-            picturePath,
+            picturePath: result.Location,
             likes: {},
             comments: [],
         });

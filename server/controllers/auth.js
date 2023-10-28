@@ -6,6 +6,7 @@ import handleBars from "handlebars";
 import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { uploadFile } from "../s3Service.js";
 // REGISTER USER
 
 export const register = async (req, res) => {
@@ -15,19 +16,24 @@ export const register = async (req, res) => {
             lastName,
             email,
             password,
-            picturePath,
             friends,
             location,
             occupation,
         } = req.body;
-
         const passwordHash = bcrypt.hashSync(password, 10);
+        const file = req.file;
+        var picturePath = "";
+        if (file) {
+            result = await uploadFile(file);
+            picturePath = result.Location;
+        }
+
         const newUser = new User({
             firstName,
             lastName,
             email,
             password: passwordHash,
-            picturePath,
+            picturePath: picturePath,
             friends,
             location,
             occupation,

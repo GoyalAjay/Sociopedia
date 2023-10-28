@@ -108,7 +108,7 @@ const PostWidget = ({
                             marginTop: "0.75rem",
                         }}
                         crossOrigin="anonymous"
-                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
+                        src={`${picturePath}`}
                     />
                 )}
             </FlexBetween>
