@@ -24,7 +24,7 @@ export const register = async (req, res) => {
         const file = req.file;
         var picturePath = "";
         if (file) {
-            result = await uploadFile(file);
+            const result = await uploadFile(file);
             picturePath = result.Location;
         }
 
