@@ -41,9 +41,8 @@ export const getFeedPosts = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
     try {
-        console.log("posts controller");
+        console.log("user post");
         const { userId } = req.params;
-        console.log(userId);
         const post = await Post.find({ userId });
 
         res.status(200).json(post);
@@ -54,6 +53,7 @@ export const getUserPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
     try {
+        console.log("getting post");
         const postId = req.params.postId;
         const post = await Post.findById(postId);
         res.status(200).json(post);

@@ -74,12 +74,23 @@ const Friend = ({
             {loggedInUserId !== friendId ? (
                 <IconButton
                     onClick={patchFriend}
-                    sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+                    sx={{
+                        backgroundColor: primaryLight,
+                        p: "0.6rem",
+                    }}
                 >
                     {isFriend ? (
-                        <PersonRemoveOutlined sx={{ color: primaryDark }} />
+                        <PersonRemoveOutlined
+                            sx={{
+                                color: primaryDark,
+                            }}
+                        />
                     ) : (
-                        <PersonAddOutlined sx={{ color: primaryDark }} />
+                        <PersonAddOutlined
+                            sx={{
+                                color: primaryDark,
+                            }}
+                        />
                     )}
                 </IconButton>
             ) : undefined}

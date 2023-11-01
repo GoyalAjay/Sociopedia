@@ -18,7 +18,8 @@ import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, setSinglePost } from "state";
+import { useNavigate } from "react-router-dom";
 
 import InputComment from "components/InputComment";
 import GetComment from "components/GetComments";
@@ -44,10 +45,11 @@ const PostWidget = ({
     comments,
 }) => {
     const [isComments, setIsComments] = useState(false);
-    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const token = useSelector((state) => state.token);
     const loggedInUserId = useSelector((state) => state.user._id);
     const isLiked = Boolean(likes[loggedInUserId]);
@@ -75,14 +77,14 @@ const PostWidget = ({
 
     const getPost = async () => {
         const response = await fetch(
-            `${process.env.REACT_APP_SERVER_URL}/posts/${postId}`,
+            `${process.env.REACT_APP_SERVER_URL}/posts/post/${postId}`,
             {
                 method: "GET",
                 headers: { Authorization: `Bearer ${token}` },
             }
         );
         const data = await response.json();
-        dispatch(setPost({ post: data }));
+        dispatch(setSinglePost({ post: data }));
     };
 
     return (
@@ -97,7 +99,17 @@ const PostWidget = ({
             <Typography color={main} sx={{ mt: "1rem", fontSize: "1.75rem" }}>
                 {description}
             </Typography>
-            <FlexBetween sx={{ height: "100%", width: "100%" }}>
+            <FlexBetween
+                sx={{
+                    height: "100%",
+                    width: "100%",
+                    "&:hover": { cursor: "pointer" },
+                }}
+                onClick={() => {
+                    getPost();
+                    navigate(`/post/${postId}`);
+                }}
+            >
                 {picturePath && (
                     <img
                         width="100%"
