@@ -1,7 +1,7 @@
 import { InputBase, Button, useTheme } from "@mui/material";
 import UserImage from "./UserImage";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, setSinglePost } from "state";
 import { useState } from "react";
 
 const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
@@ -28,7 +28,7 @@ const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
             }
         );
         const post = await response.json();
-        dispatch(setPost({ post }));
+        dispatch(setPost({ post }, setSinglePost({ post })));
         setComment("");
         window.location.reload(true);
     };

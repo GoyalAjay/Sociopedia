@@ -8,7 +8,7 @@ export const createComment = async (req, res) => {
         const { postId, userId, description } = req.body;
         const post = await Post.findOne({ _id: postId });
         const user = await User.findById(userId);
-        console.log(user);
+
         const newComment = new Comment({
             userId,
             postId,
@@ -19,8 +19,6 @@ export const createComment = async (req, res) => {
             userPicturePath: user.picturePath,
         });
         await newComment.save();
-        console.log(newComment);
-        console.log(post.comments);
         post.comments.unshift(newComment);
         await post.save();
         res.status(201).json(newComment);

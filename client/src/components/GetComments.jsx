@@ -1,8 +1,17 @@
 import { Box, Typography, useTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 
-const GetComment = ({ commentId, name, description, userPicturePath }) => {
+const GetComment = ({
+    commentId,
+    commentUserId,
+    name,
+    description,
+    userPicturePath,
+}) => {
+    const navigate = useNavigate();
+
     const { palette } = useTheme();
     const main = palette.neutral.main;
     const primaryDark = palette.primary.dark;
@@ -16,27 +25,34 @@ const GetComment = ({ commentId, name, description, userPicturePath }) => {
         >
             <UserImage image={userPicturePath} size="40px" />
             <Box
-                m="0rem 1rem"
+                m="0.75rem 0rem 0.5rem 1rem"
                 p="0.4rem 1rem"
                 sx={{
                     backgroundColor: light,
                     borderRadius: "0.5rem",
                 }}
             >
-                <Typography
-                    color={main}
-                    lineHeight="1.2308"
-                    fontSize="1rem"
-                    fontWeight="600"
-                    sx={{
-                        "&:hover": {
-                            color: primaryDark,
-                            cursor: "pointer",
-                        },
+                <Box
+                    onClick={() => {
+                        navigate(`/user/${commentUserId}`);
+                        navigate(0);
                     }}
                 >
-                    {name}
-                </Typography>
+                    <Typography
+                        color={main}
+                        lineHeight="1.2308"
+                        fontSize="1rem"
+                        fontWeight="600"
+                        sx={{
+                            "&:hover": {
+                                color: primaryDark,
+                                cursor: "pointer",
+                            },
+                        }}
+                    >
+                        {name}
+                    </Typography>
+                </Box>
                 <Typography
                     lineHeight="1.333"
                     fontSize="0.92rem"

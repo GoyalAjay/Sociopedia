@@ -167,6 +167,7 @@ const PostWidget = ({
                         {comments.map(
                             ({
                                 _id,
+                                userId,
                                 firstName,
                                 lastName,
                                 description,
@@ -175,6 +176,7 @@ const PostWidget = ({
                                 <GetComment
                                     key={_id}
                                     commentId={_id}
+                                    commentUserId={userId}
                                     name={`${firstName} ${lastName}`}
                                     description={description}
                                     userPicturePath={userPicturePath}
@@ -255,7 +257,7 @@ const PostWidget = ({
                                             marginTop: "0.75rem",
                                         }}
                                         crossOrigin="anonymous"
-                                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
+                                        src={`${picturePath}`}
                                     />
                                 )}
                                 <FlexBetween mt="0.25rem">
@@ -306,6 +308,7 @@ const PostWidget = ({
                                 {comments.map(
                                     ({
                                         _id,
+                                        userId,
                                         firstName,
                                         lastName,
                                         description,
@@ -314,6 +317,7 @@ const PostWidget = ({
                                         <GetComment
                                             key={_id}
                                             commentId={_id}
+                                            commentUserId={userId}
                                             name={`${firstName} ${lastName}`}
                                             description={description}
                                             userPicturePath={userPicturePath}
@@ -388,7 +392,7 @@ const PostWidget = ({
                                             marginTop: "0.75rem",
                                         }}
                                         crossOrigin="anonymous"
-                                        src={`${process.env.REACT_APP_SERVER_URL}/assets/${picturePath}`}
+                                        src={`${picturePath}`}
                                     />
                                 )}
                                 <FlexBetween mt="0.25rem">
@@ -439,6 +443,7 @@ const PostWidget = ({
                                 {comments.map(
                                     ({
                                         _id,
+                                        userId,
                                         firstName,
                                         lastName,
                                         description,
@@ -447,6 +452,7 @@ const PostWidget = ({
                                         <GetComment
                                             key={_id}
                                             commentId={_id}
+                                            commentUserId={userId}
                                             name={`${firstName} ${lastName}`}
                                             description={description}
                                             userPicturePath={userPicturePath}

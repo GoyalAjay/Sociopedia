@@ -48,6 +48,7 @@ export const authSlice = createSlice({
                     if (post._id === action.payload.post._id) {
                         state.post = action.payload.post;
                     }
+                    return post;
                 });
             } else {
                 state.post = [];
