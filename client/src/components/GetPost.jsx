@@ -48,6 +48,7 @@ const GetPost = () => {
     const { palette } = useTheme();
     const loggedInUserId = useSelector((state) => state.user._id);
     const main = palette.neutral.main;
+    const alt = palette.background.alt;
 
     return (
         <>
@@ -90,7 +91,7 @@ const GetPost = () => {
                         <Box
                             sx={{
                                 width: "40%",
-                                backgroundColor: "white",
+                                backgroundColor: { alt },
                             }}
                         >
                             <Box
