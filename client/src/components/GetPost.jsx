@@ -70,7 +70,7 @@ const GetPost = () => {
                             sx={{
                                 height: "100%",
                                 width: "100%",
-                                backgroundColor: `#1a1a1a`,
+                                backgroundColor: "#1a1a1a",
                             }}
                         >
                             {post.picturePath && (
@@ -91,7 +91,7 @@ const GetPost = () => {
                         <Box
                             sx={{
                                 width: "40%",
-                                backgroundColor: { alt },
+                                backgroundColor: alt,
                             }}
                         >
                             <Box
