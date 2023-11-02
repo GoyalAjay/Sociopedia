@@ -6,9 +6,14 @@ import { uploadFile } from "../s3Service.js";
 export const createPost = async (req, res) => {
     try {
         const { userId, description } = req.body;
+        console.log(userId);
         const user = await User.findById(userId);
         const file = req.file;
-        const result = await uploadFile(file);
+        var picturePath = "";
+        if (file) {
+            const result = await uploadFile(file);
+            picturePath = result.Location;
+        }
         const newPost = new Post({
             userId,
             firstName: user.firstName,
@@ -16,7 +21,7 @@ export const createPost = async (req, res) => {
             location: user.location,
             description,
             userPicturePath: user.picturePath,
-            picturePath: result.Location,
+            picturePath: picturePath,
             likes: {},
             comments: [],
         });
