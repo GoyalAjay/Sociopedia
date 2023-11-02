@@ -146,7 +146,14 @@ const PostWidget = ({
                             }}
                         >
                             <ChatBubbleOutlineOutlined />
-                            <Typography ml="0.2rem">Comment</Typography>
+                            <Typography ml="0.2rem">
+                                {comments.length <= 1 ? "Comment" : "Comments"}
+                            </Typography>
+                            <Typography ml="0.2rem">
+                                {comments.length === 0
+                                    ? undefined
+                                    : comments.length}
+                            </Typography>
                         </IconButton>
                     </FlexBetween>
                 </FlexBetween>
@@ -288,6 +295,9 @@ const PostWidget = ({
                                                 <Typography ml="0.2rem">
                                                     Comment
                                                 </Typography>
+                                                <Typography ml="0.2rem">
+                                                    {comments.length}
+                                                </Typography>
                                             </IconButton>
                                         </FlexBetween>
                                     </FlexBetween>
@@ -422,6 +432,9 @@ const PostWidget = ({
                                                 <ChatBubbleOutlineOutlined />
                                                 <Typography ml="0.2rem">
                                                     Comment
+                                                </Typography>
+                                                <Typography ml="0.2rem">
+                                                    {comments.length}
                                                 </Typography>
                                             </IconButton>
                                         </FlexBetween>
