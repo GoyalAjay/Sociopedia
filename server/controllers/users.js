@@ -1,16 +1,21 @@
+import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/User.js";
+import Request from "../models/FriendRequest.js";
+import { NotFoundError } from "../utils/errorHandler/error.utils.js";
 
 // READ
-
-export const getUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const user = await User.findById(id);
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(404).json({ message: error.message });
+export const getUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+        throw new NotFoundError("User not found!!", {
+            success: false,
+            code: 404,
+            message: "No user found.",
+        });
     }
-};
+    return res.status(200).json(user);
+});
 
 export const getUserFriends = async (req, res) => {
     try {
@@ -45,6 +50,7 @@ export const getUserFriends = async (req, res) => {
 };
 
 // UPDATE
+// export const sendFriendRequest = async;
 
 export const addRemoveFriends = async (req, res) => {
     try {

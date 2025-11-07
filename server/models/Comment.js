@@ -10,11 +10,7 @@ export const commentSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        firstName: {
-            type: String,
-            required: true,
-        },
-        lastName: {
+        userName: {
             type: String,
             required: true,
         },

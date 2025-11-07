@@ -1,76 +1,101 @@
-import bodyParser from "body-parser";
+import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import express from "express";
 import helmet from "helmet";
-import mongoose from "mongoose";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { connectDB } from "./config/db.js";
 import morgan from "morgan";
-import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
-import { createPost } from "./controllers/posts.js";
-import { register } from "./controllers/auth.js";
-import authRoutes from "./routes/auth.js";
+import authRouter from "./routes/auth.js";
 import commentRoutes from "./routes/comments.js";
 import postRoutes from "./routes/posts.js";
 import userRoutes from "./routes/users.js";
-import { verifyToken } from "./middleware/auth.js";
+import { socketHandler } from "./socket/socketHandler.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
-// CONFIGURATIONS
+const PORT = process.env.PORT || 6001;
+await connectDB();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const isProduction = process.env.NODE_ENV === "production";
 var corsOptions = {
-    origin: "*",
+    origin: ["http://localhost:5173"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
 };
 
 const app = express();
-app.use(express.json());
-app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ origin: "cross-origin" }));
-app.use(morgan("common"));
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.set("trust proxy", true);
+
+// MIDDLEWARE
+app.use(express.json({ limit: "30mb", extended: true }));
+app.use(express.urlencoded({ extended: true }));
+app.use(
+    helmet({
+        frameguard: { action: "deny" }, // prevent clickjacking
+        crossOriginResourcePolicy: { origin: "cross-origin" },
+        referrerPolicy: { policy: "no-referrer" },
+        hsts: isProduction ? { maxAge: 31536000, preload: true } : false,
+
+        // Use CSP only in production
+        contentSecurityPolicy: isProduction
+            ? {
+                  useDefaults: true,
+                  directives: {
+                      defaultSrc: ["'self'"],
+                      scriptSrc: [
+                          "'self'",
+                          "'unsafe-inline'", //needed if React injects inline scripts
+                          "https://cdn.jsdelivr.net",
+                          "https://unpkg.com",
+                      ],
+                      styleSrc: [
+                          "'self'",
+                          "'unsafe-inline'",
+                          "https://fonts.googleapis.com",
+                      ],
+                      imgSrc: ["'self'", "data:", "https:"],
+                      connectSrc: [
+                          "'self'",
+                          "https://sociopedia-backend-9jo5.onrender.com",
+                      ],
+                      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+                      frameAncestors: ["'none'"], // disallow embedding
+                      upgradeInsecureRequests: [],
+                  },
+              }
+            : false,
+    })
+);
+app.use(morgan("dev"));
 app.use(cors(corsOptions));
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
-// FILE STORAGE
+// ROUTES
+app.get("/", (req, res) => {
+    res.send("API is running.......");
+});
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "public/uploads");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
+
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: corsOptions.origin,
+        methods: corsOptions.methods,
     },
 });
 
-const upload = multer({ storage });
+socketHandler(io);
+app.set("io", io);
 
-// ROUTES WITH FILES
-app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+// Error handling middleware
+app.use(notFound);
+app.use(errorHandler);
 
-// ROUTES
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/posts", postRoutes);
-app.use("/comments", commentRoutes);
-// MONGOOSE SETUP
-const PORT = process.env.PORT || 6001;
-
-async function main() {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        app.listen(PORT, () => {
-            console.log(`Server is running on port: ${PORT}`);
-        });
-    } catch (error) {
-        console.log(`${error}, did not connect.`);
-    }
-}
-main();
+server.listen(PORT, () => {
+    console.log(`Server is running on port: ${PORT}`);
+});

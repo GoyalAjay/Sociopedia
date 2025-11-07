@@ -7,17 +7,13 @@ const postSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        firstName: {
-            type: String,
-            required: true,
-        },
-        lastName: {
+        userName: {
             type: String,
             required: true,
         },
         location: String,
         description: String,
-        picturePath: String,
+        picturePath: [String],
         userPicturePath: String,
         likes: {
             type: Map,

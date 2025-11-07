@@ -1,6 +1,7 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
-import { uploadFile } from "../s3Service.js";
+import { mediaPost } from "../config/s3Service.js";
+// import { uploadFile } from "../s3Service.js";
 // CREATE
 
 export const createPost = async (req, res) => {
@@ -11,7 +12,10 @@ export const createPost = async (req, res) => {
         const file = req.file;
         var picturePath = "";
         if (file) {
-            const result = await uploadFile(file);
+            const uniqueName = Date.now() + "-" + file.originalname;
+            const key = `/posts/${userId}/${uniqueName}`;
+            const result = await mediaPost(file.buffer, key);
+            // const result = await uploadFile(file);
             picturePath = result.Location;
         }
         const newPost = new Post({

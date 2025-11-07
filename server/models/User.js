@@ -1,4 +1,12 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
+const friendSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+});
 
 const userSchema = new mongoose.Schema(
     {
@@ -13,6 +21,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             min: 2,
             max: 50,
+        },
+        uuid: {
+            type: String,
+            unique: true,
+            required: true,
         },
         email: {
             type: String,
@@ -29,8 +42,22 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        tokenVersion: {
+            type: Number,
+            default: 0,
+        },
+        isLoggedIn: {
+            type: Boolean,
+            default: false,
+        },
+        loginTime: {
+            type: Date,
+        },
+        logoutTime: {
+            type: Date,
+        },
         friends: {
-            type: Array,
+            type: [friendSchema],
             default: [],
         },
         location: String,
@@ -40,6 +67,20 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+
+    this.password = await bcrypt.hash(
+        this.password,
+        Number(process.env.HASH_SALT)
+    );
+    next();
+});
 
 const User = mongoose.model("User", userSchema);
 export default User;
