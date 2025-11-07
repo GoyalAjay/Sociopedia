@@ -1,7 +1,7 @@
 import { Box, useMediaQuery } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setSinglePost } from "state";
-
+import { useAuthStore } from "../../slices/authStore";
 import Navbar from "scenes/navbar";
 import UserWidget from "scenes/widgets/UserWidget";
 import MyPostWidget from "scenes/widgets/MyPostWidget";
@@ -12,7 +12,10 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 export default function HomePage() {
     const dispatch = useDispatch();
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-    const { _id, picturePath } = useSelector((state) => state.user);
+    const { user } = useAuthStore();
+    const { _id, picturePath } = user;
+    console.log(user);
+    // const { _id, picturePath } = useSelector((state) => state.user);
 
     window.addEventListener("popstate", () => {
         dispatch(setSinglePost([]));

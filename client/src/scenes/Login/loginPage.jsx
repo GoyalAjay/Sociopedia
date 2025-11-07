@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import { useLoginMutation } from "../../slices/userApi";
 import { loginSchema } from "../../validations/validations";
-import { userAuthStore } from "../../slices/authStore";
+import { useAuthStore } from "../../slices/authStore";
 
 export default function LoginPage() {
     const theme = useTheme();
@@ -25,7 +25,7 @@ export default function LoginPage() {
     const [errors, setErrors] = useState({});
 
     const [login, { isLoading, error }] = useLoginMutation();
-    const setAuth = userAuthStore((s) => s.setAuth);
+    const setAuth = useAuthStore((s) => s.setAuth);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {

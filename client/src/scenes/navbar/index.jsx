@@ -21,16 +21,17 @@ import {
     Menu,
     Close,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import { useAuthStore } from "../../slices/authStore";
 
 export default function Navbar() {
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const user = useSelector((state) => state.user);
+    const { user } = useAuthStore();
     const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
 
     const theme = useTheme();

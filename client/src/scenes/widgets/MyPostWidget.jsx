@@ -24,6 +24,7 @@ import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
+import { useAuthStore } from "../../slices/authStore";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 
@@ -32,8 +33,7 @@ const MyPostWidget = ({ picturePath }) => {
     const [image, setImage] = useState(null);
     const [post, setPost] = useState("");
     const { palette } = useTheme();
-    const { _id } = useSelector((state) => state.user);
-    const token = useSelector((state) => state.token);
+    const { _id } = useAuthStore((state) => state.user);
     const dispatch = useDispatch();
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -52,7 +52,6 @@ const MyPostWidget = ({ picturePath }) => {
             `${process.env.REACT_APP_SERVER_URL}/posts`,
             {
                 method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             }
         );
