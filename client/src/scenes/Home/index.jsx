@@ -1,6 +1,4 @@
 import { Box, useMediaQuery } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { setSinglePost } from "state";
 import { useAuthStore } from "../../slices/authStore";
 import Navbar from "scenes/navbar";
 import UserWidget from "scenes/widgets/UserWidget";
@@ -8,18 +6,12 @@ import MyPostWidget from "scenes/widgets/MyPostWidget";
 import PostsWidget from "scenes/widgets/PostsWidget";
 import AdvertWidget from "scenes/widgets/AdvertWidget";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
+import { getSocket } from "../../socket/socket";
 
 export default function HomePage() {
-    const dispatch = useDispatch();
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
     const { user } = useAuthStore();
     const { _id, picturePath } = user;
-    console.log(user);
-    // const { _id, picturePath } = useSelector((state) => state.user);
-
-    window.addEventListener("popstate", () => {
-        dispatch(setSinglePost([]));
-    });
 
     return (
         <Box>
@@ -32,7 +24,7 @@ export default function HomePage() {
                 justifyContent="space-between"
             >
                 <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-                    <UserWidget userId={_id} picturePath={picturePath} />
+                    {/* <UserWidget userId={_id} picturePath={picturePath} /> */}
                 </Box>
                 <Box
                     flexBasis={isNonMobileScreens ? "42%" : undefined}
@@ -43,9 +35,9 @@ export default function HomePage() {
                 </Box>
                 {isNonMobileScreens && (
                     <Box flexBasis="26%">
-                        <AdvertWidget />
+                        {/* <AdvertWidget /> */}
                         <Box m="2rem 0" />
-                        <FriendListWidget userId={_id} />
+                        {/* <FriendListWidget userId={_id} /> */}
                     </Box>
                 )}
             </Box>

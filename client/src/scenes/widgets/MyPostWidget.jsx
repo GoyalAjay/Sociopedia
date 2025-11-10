@@ -23,44 +23,80 @@ import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../../slices/authStore";
-import { useDispatch, useSelector } from "react-redux";
-import { setPosts } from "state";
+import { useCreatePostMutation } from "../../slices/postApi";
+
+const MAX_IMAGES = 10;
 
 const MyPostWidget = ({ picturePath }) => {
     const [isImage, setIsImage] = useState(false);
-    const [image, setImage] = useState(null);
+    const [images, setImages] = useState([]);
+    const [previews, setPreviews] = useState([]);
     const [post, setPost] = useState("");
     const { palette } = useTheme();
     const { _id } = useAuthStore((state) => state.user);
-    const dispatch = useDispatch();
+    const [createPost, { isLoading, error }] = useCreatePostMutation();
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
     const mediumMain = palette.neutral.mediumMain;
     const medium = palette.neutral.medium;
 
+    // create previews when images state changes
+    useEffect(() => {
+        // Revoke previous URLs
+        previews.forEach((p) => URL.revokeObjectURL(p.url));
+
+        const nextPreviews = images.map((file, idx) => ({
+            id: `${file.name}-${file.size}-${idx}`,
+            url: URL.createObjectURL(file),
+            name: file.name,
+            size: file.size,
+        }));
+        setPreviews(nextPreviews);
+
+        // cleanup on unmount
+        return () => {
+            nextPreviews.forEach((p) => URL.revokeObjectURL(p.url));
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [images]);
+
+    const handleDrop = (acceptedFiles) => {
+        if (!acceptedFiles || acceptedFiles.length === 0) return;
+
+        // keep total under MAX_IMAGES
+        const spaceLeft = MAX_IMAGES - images.length;
+        const toTake = acceptedFiles.slice(0, spaceLeft);
+
+        // Filter acceptedFiles by type/size if needed
+        setImages((prev) => [...prev, ...toTake]);
+    };
+
+    const removeImageAt = (index) => {
+        setImages((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const handlePost = async () => {
+        if (!post.trim() && images.length === 0) return;
+
         const formData = new FormData();
-        formData.append("userId", _id);
-        formData.append("description", post);
-        if (image) {
-            formData.append("picture", image);
-            formData.append("picturePath", image.name);
-        }
-        const response = await fetch(
-            `${process.env.REACT_APP_SERVER_URL}/posts`,
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
-        const posts = await response.json();
-        dispatch(setPosts({ posts }));
-        setImage(null);
+        formData.append("description", post.trim());
+
+        // Append multiple files under same field name "pictures"
+        images.forEach((file) => {
+            formData.append("pictures", file);
+        });
+
+        await createPost(formData);
+        setImages([]);
         setPost("");
+        setIsImage(false);
         // window.location.reload(true);
     };
+
+    const canDropMore = images.length < MAX_IMAGES;
+    const remainingSlots = MAX_IMAGES - images.length;
     return (
         <WidgetWrapper>
             <FlexBetween gap="1.5rem">
@@ -86,10 +122,12 @@ const MyPostWidget = ({ picturePath }) => {
                 >
                     <Dropzone
                         acceptedFiles=".jpg,.jpeg,.png"
-                        multiple={false}
-                        onDrop={(acceptedFiles) => setImage(acceptedFiles[0])}
+                        onDrop={handleDrop}
+                        multiple
+                        maxFiles={MAX_IMAGES}
+                        disabled={!canDropMore}
                     >
-                        {({ getRootProps, getInputProps }) => (
+                        {({ getRootProps, getInputProps, isDragActive }) => (
                             <FlexBetween>
                                 <Box
                                     {...getRootProps()}
@@ -103,21 +141,29 @@ const MyPostWidget = ({ picturePath }) => {
                                     }}
                                 >
                                     <input {...getInputProps()} />
-                                    {!image ? (
-                                        <p>Add Image Here</p>
+                                    {!images.length ? (
+                                        <Typography>
+                                            {isDragActive
+                                                ? "Drop images here..."
+                                                : "Add images (up to 10)"}
+                                        </Typography>
                                     ) : (
                                         <FlexBetween>
                                             <Typography>
-                                                {image.name}
+                                                {images.length} image(s)
+                                                selected — {remainingSlots}{" "}
+                                                slot(s) left
                                             </Typography>
                                             <EditOutlined />
                                         </FlexBetween>
                                     )}
                                 </Box>
-                                {image && (
+                                {/* Remove last button */}
+                                {images.length > 0 && (
                                     <IconButton
-                                        onClick={() => setImage(null)}
+                                        onClick={() => setImages([])}
                                         sx={{ width: "15%" }}
+                                        title="Remove all"
                                     >
                                         <DeleteOutlined />
                                     </IconButton>
@@ -125,6 +171,59 @@ const MyPostWidget = ({ picturePath }) => {
                             </FlexBetween>
                         )}
                     </Dropzone>
+                    {/* Previews */}
+                    {previews.length > 0 && (
+                        <Box
+                            mt="1rem"
+                            display="flex"
+                            gap="0.5rem"
+                            flexWrap="wrap"
+                        >
+                            {previews.map((p, idx) => (
+                                <Box
+                                    key={p.id}
+                                    sx={{
+                                        width: 100,
+                                        height: 100,
+                                        borderRadius: 2,
+                                        overflow: "hidden",
+                                        position: "relative",
+                                        border: `1px solid ${medium}`,
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                    }}
+                                >
+                                    <img
+                                        src={p.url}
+                                        alt={p.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            display: "block",
+                                        }}
+                                    />
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => removeImageAt(idx)}
+                                        sx={{
+                                            position: "absolute",
+                                            top: 2,
+                                            right: 2,
+                                            background: "rgba(255,255,255,0.8)",
+                                            "&:hover": {
+                                                background:
+                                                    "rgba(255,255,255,1)",
+                                            },
+                                        }}
+                                        aria-label={`Remove ${p.name}`}
+                                    >
+                                        <DeleteOutlined fontSize="small" />
+                                    </IconButton>
+                                </Box>
+                            ))}
+                        </Box>
+                    )}
                 </Box>
             )}
             <Divider sx={{ margin: "1.25rem 0rem" }} />
@@ -135,7 +234,7 @@ const MyPostWidget = ({ picturePath }) => {
                         color={mediumMain}
                         sx={{ "&:hover": { cursor: "pointer", color: medium } }}
                     >
-                        Image
+                        Images
                     </Typography>
                 </FlexBetween>
                 {isNonMobileScreens ? (

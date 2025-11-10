@@ -7,6 +7,7 @@ export const useThemeStore = create(
             mode: "light",
             toggleMode: () =>
                 set({ mode: get().mode === "light" ? "dark" : "light" }),
+            setMode: (newMode) => set({ mode: newMode }),
         }),
         { name: "theme" }
     )

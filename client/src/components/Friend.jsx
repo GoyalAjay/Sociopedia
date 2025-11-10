@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
+import { useAuthStore } from "../slices/authStore";
 
 const Friend = ({
     loggedInUserId,
@@ -15,9 +16,9 @@ const Friend = ({
 }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { _id } = useSelector((state) => state.user);
-    const token = useSelector((state) => state.token);
-    const friends = useSelector((state) => state.user.friends);
+    const { user } = useAuthStore();
+    const { _id, friends } = user;
+    // const token = useSelector((state) => state.token);
 
     const { palette } = useTheme();
     const primaryLight = palette.primary.light;

@@ -21,5 +21,4 @@ export const registerSchema = Yup.object({
         .required("Passwords must match"),
     location: Yup.string(),
     occupation: Yup.string(),
-    picture: Yup.string(),
 });

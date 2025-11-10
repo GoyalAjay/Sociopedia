@@ -26,12 +26,14 @@ import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import { useAuthStore } from "../../slices/authStore";
+import { useThemeStore } from "../../slices/themeStore";
 
 export default function Navbar() {
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user } = useAuthStore();
+    const { user, logout } = useAuthStore();
+    const { mode, toggleMode } = useThemeStore();
     const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
 
     const theme = useTheme();
@@ -40,6 +42,10 @@ export default function Navbar() {
     const background = theme.palette.background.default;
     const primaryLight = theme.palette.primary.light;
     const alt = theme.palette.background.alt;
+
+    const handleLogout = () => {
+        logout();
+    };
 
     const fullName = `${user.firstName} ${user.lastName}`;
     return (
@@ -85,8 +91,8 @@ export default function Navbar() {
                                 : "Click for dark mode"
                         }
                     >
-                        <IconButton onClick={() => dispatch(setMode())}>
-                            {theme.palette.mode === "dark" ? (
+                        <IconButton onClick={toggleMode}>
+                            {mode === "dark" ? (
                                 <DarkMode
                                     sx={{
                                         fontSize: "25px",
@@ -139,9 +145,7 @@ export default function Navbar() {
                             <MenuItem value={fullName}>
                                 <Typography>{fullName}</Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => dispatch(setLogout())}>
-                                Log Out
-                            </MenuItem>
+                            <MenuItem onClick={handleLogout}>Log Out</MenuItem>
                         </Select>
                     </FormControl>
                 </FlexBetween>

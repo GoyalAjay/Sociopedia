@@ -1,42 +1,34 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setPosts } from "state";
+import { useEffect, useState } from "react";
 import PostWidget from "./PostWidget";
+import { getSocket } from "../../socket/socket";
+import { useGetPostsQuery, useGetUserPostsQuery } from "../../slices/postApi";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
-    const dispatch = useDispatch();
-    const posts = useSelector((state) => state.posts);
-    const token = useSelector((state) => state.token);
+    let {
+        data: initialPosts = [],
+        isLoading,
+        error,
+    } = isProfile ? useGetUserPostsQuery(userId) : useGetPostsQuery();
 
+    const [posts, setPosts] = useState(initialPosts);
+
+    // Sync when query updates (initial fetch / refetch)
     useEffect(() => {
-        if (isProfile) {
-            const getUserPosts = async () => {
-                const response = await fetch(
-                    `${process.env.REACT_APP_SERVER_URL}/posts/${userId}`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                const data = await response.json();
-                dispatch(setPosts({ posts: data }));
-            };
-            getUserPosts();
-        } else {
-            const getPosts = async () => {
-                const response = await fetch(
-                    `${process.env.REACT_APP_SERVER_URL}/posts/`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                const data = await response.json();
-                dispatch(setPosts({ posts: data }));
-            };
-            getPosts();
+        setPosts(initialPosts);
+    }, [initialPosts]);
+
+    const socket = getSocket();
+    const handlePosts = (data) => {
+        // If server sends an entire array:
+        if (Array.isArray(data.posts)) {
+            setPosts(data.posts);
+            return;
         }
-    }, [userId, token, isProfile, dispatch]);
+    };
+    socket.on("posts", handlePosts);
+
+    if (isLoading) return <div>Loading posts...</div>;
+    if (error) return <div>Error fetching posts</div>;
 
     return (
         <>
@@ -44,8 +36,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                 ({
                     _id,
                     userId,
-                    firstName,
-                    lastName,
+                    userName,
                     description,
                     location,
                     picturePath,
@@ -57,7 +48,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                         key={_id}
                         postId={_id}
                         postUserId={userId}
-                        name={`${firstName} ${lastName}`}
+                        name={`${userName}`}
                         description={description}
                         location={location}
                         picturePath={picturePath}

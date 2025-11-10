@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -13,6 +13,7 @@ import FlexBetween from "components/FlexBetween";
 import { useLoginMutation } from "../../slices/userApi";
 import { loginSchema } from "../../validations/validations";
 import { useAuthStore } from "../../slices/authStore";
+import { connectSocket } from "../../socket/socket";
 
 export default function LoginPage() {
     const theme = useTheme();
@@ -24,8 +25,11 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
 
-    const [login, { isLoading, error }] = useLoginMutation();
-    const setAuth = useAuthStore((s) => s.setAuth);
+    const [
+        login,
+        { data: loginData, isSuccess: loginSuccess, isLoading, isError, error },
+    ] = useLoginMutation();
+    const { setAuth } = useAuthStore();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -38,17 +42,23 @@ export default function LoginPage() {
                 { abortEarly: false }
             );
 
-            const res = await login(validData).unwrap();
-            console.log(res);
-            const { userObj } = res;
-            setAuth({ user: userObj });
-            navigate("/home");
+            await login(validData).unwrap();
         } catch (error) {
             const newErrors = {};
             error.inner.forEach((e) => (newErrors[e.path] = e.message));
             setErrors(newErrors);
         }
     };
+
+    useEffect(() => {
+        if (loginSuccess) {
+            connectSocket();
+            const { userObj } = loginData;
+            setAuth({ user: userObj });
+            navigate("/home");
+        }
+    }, [loginSuccess, loginData]);
+
     return (
         <Box>
             <Box

@@ -2,6 +2,7 @@ import { apiSlice } from "./baseApi";
 
 export const userApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
+        // Mutations
         login: builder.mutation({
             query: (data) => ({
                 url: `auth/login`,
@@ -16,7 +17,16 @@ export const userApi = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+
+        // Queries
+        getFriends: builder.query({
+            query: (id) => ({
+                url: `/friends/${id}`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = userApi;
+export const { useLoginMutation, useRegisterMutation, useGetFriendsQuery } =
+    userApi;

@@ -20,6 +20,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost, setSinglePost } from "state";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../slices/authStore";
+import ImageCarousel from "../../components/ImageCarousel";
 
 import InputComment from "components/InputComment";
 import GetComment from "components/GetComments";
@@ -51,7 +53,8 @@ const PostWidget = ({
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const token = useSelector((state) => state.token);
-    const loggedInUserId = useSelector((state) => state.user._id);
+    const { user } = useAuthStore();
+    const loggedInUserId = user._id;
     const isLiked = Boolean(likes[loggedInUserId]);
     const likeCount = Object.keys(likes).length;
 
@@ -101,26 +104,16 @@ const PostWidget = ({
             </Typography>
             <FlexBetween
                 sx={{
-                    height: "100%",
-                    width: "100%",
                     "&:hover": { cursor: "pointer" },
                 }}
-                onClick={() => {
-                    getPost();
-                    navigate(`/post/${postId}`);
-                }}
             >
-                {picturePath && (
-                    <img
-                        width="100%"
-                        height="auto"
-                        alt="post"
-                        style={{
-                            borderRadius: "0.75rem",
-                            marginTop: "0.75rem",
+                {picturePath && picturePath.length > 0 && (
+                    <ImageCarousel
+                        images={picturePath}
+                        onImageClick={() => {
+                            getPost();
+                            navigate(`/post/${postId}`);
                         }}
-                        crossOrigin="anonymous"
-                        src={`${picturePath}`}
                     />
                 )}
             </FlexBetween>
@@ -254,7 +247,10 @@ const PostWidget = ({
                                 >
                                     {description}
                                 </Typography>
-                                {picturePath && (
+                                {picturePath && picturePath.length > 0 && (
+                                    <ImageCarousel images={picturePath} />
+                                )}
+                                {/* {picturePath.length > 0 && (
                                     <img
                                         width="100%"
                                         height="auto"
@@ -266,7 +262,7 @@ const PostWidget = ({
                                         crossOrigin="anonymous"
                                         src={`${picturePath}`}
                                     />
-                                )}
+                                )} */}
                                 <FlexBetween mt="0.25rem">
                                     <FlexBetween gap="1rem">
                                         <FlexBetween gap="0.3rem">
@@ -392,7 +388,10 @@ const PostWidget = ({
                                 >
                                     {description}
                                 </Typography>
-                                {picturePath && (
+                                {picturePath && picturePath.length > 0 && (
+                                    <ImageCarousel images={picturePath} />
+                                )}
+                                {/* {picturePath.length > 0 && (
                                     <img
                                         width="100%"
                                         height="auto"
@@ -404,7 +403,7 @@ const PostWidget = ({
                                         crossOrigin="anonymous"
                                         src={`${picturePath}`}
                                     />
-                                )}
+                                )} */}
                                 <FlexBetween mt="0.25rem">
                                     <FlexBetween gap="1rem">
                                         <FlexBetween gap="0.3rem">
