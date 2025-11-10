@@ -12,7 +12,6 @@ const s3 = new S3({ region, accessKeyId, secretAccessKey });
 export const mediaPost = async (buffer, key) => {
     const type = await fileTypeFromBuffer(buffer);
     const fileSize = buffer.length;
-    console.log(`Size of the file: ${fileSize}`);
     if (type.mime.startsWith("image/") && fileSize > 10 * 1024 * 1024) {
         return { success: false, message: "File too large!!" };
     } else if (
@@ -40,3 +39,16 @@ export const mediaPost = async (buffer, key) => {
 // uploading message media
 
 // uploading profile pic
+export const profilePic = async (buffer, key) => {
+    const type = await fileTypeFromBuffer(buffer);
+    const fileSize = buffer.length;
+    if (type.mime.startsWith("image/") && fileSize > 10 * 1024 * 1024) {
+        return { success: false, message: "File too large!!" };
+    }
+    let params = {
+        Bucket: bucketName,
+        Body: buffer,
+        Key: key,
+    };
+    return await s3.upload(params).promise();
+};

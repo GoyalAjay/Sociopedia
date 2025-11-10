@@ -10,12 +10,7 @@ import upload from "../config/multer.js";
 
 const router = express.Router();
 
-// Define the fields you want to upload
-export const uploadFields = upload.fields([
-    { name: "profilePic", maxCount: 1 },
-]);
-
-router.route("/register").post(uploadFields, register);
+router.route("/register").post(upload.single("picture"), register);
 router.route("/login").post(login);
 router.route("/forgetPasswordMail").post(sendForgetPasswordMail);
 

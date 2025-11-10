@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
 import helmet from "helmet";
@@ -70,6 +71,7 @@ app.use(
 );
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // ROUTES
 app.get("/", (req, res) => {

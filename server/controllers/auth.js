@@ -8,6 +8,7 @@ import handleBars from "handlebars";
 import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { profilePic } from "../config/s3Service.js";
 // import { uploadFile } from "../s3Service.js";
 import {
     AuthError,
@@ -23,7 +24,7 @@ export const register = sessionAsyncHandler(async (req, res, session) => {
         lastName,
         email,
         password,
-        confPass,
+        confirmPassword,
         location,
         occupation,
     } = req.body;
@@ -43,11 +44,13 @@ export const register = sessionAsyncHandler(async (req, res, session) => {
     }
 
     if (file) {
-        const result = await uploadFile(file);
+        const filename = `avatar-${uuidv4()}.jpg`;
+        const key = `profilePics/${uuid}/${filename}`;
+        const result = await profilePic(file.buffer, key);
         picturePath = result.Location;
     }
 
-    if (password !== confPass) {
+    if (password !== confirmPassword) {
         throw new ValidationError("Passwords do not match!!", {
             success: false,
             code: 400,
@@ -80,12 +83,23 @@ export const register = sessionAsyncHandler(async (req, res, session) => {
             message: "Could not create a user with the data provided.",
         });
     }
-    res.status(201).json(newUser);
+    newUser.isLoggedIn = true;
+    newUser.loginTime = Date.now();
+    await newUser.save({ session });
+
+    generateWebToken(res, newUser._id, newUser.uuid, newUser.tokenVersion);
+
+    const userObj = newUser.toObject();
+    delete userObj.password;
+    delete userObj.isLoggedIn;
+    delete userObj.loginTime;
+    delete userObj.tokenVersion;
+
+    res.status(201).json(userObj);
 });
 
 // LOGGING IN
 export const login = sessionAsyncHandler(async (req, res, session) => {
-    console.log(req.body);
     let { email, password } = req.body;
     email = email.trim();
     password = password.trim();

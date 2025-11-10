@@ -1,52 +1,54 @@
+import asyncHandler from "../middleware/asyncHandler.js";
+import sessionAsyncHandler from "../middleware/sessionAsyncHandler.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import { mediaPost } from "../config/s3Service.js";
 // import { uploadFile } from "../s3Service.js";
 // CREATE
 
-export const createPost = async (req, res) => {
-    try {
-        const { userId, description } = req.body;
-        console.log(userId);
-        const user = await User.findById(userId);
-        const file = req.file;
-        var picturePath = "";
-        if (file) {
+export const createPost = sessionAsyncHandler(async (req, res, session) => {
+    const { description } = req.body;
+    const user = await User.findById(req.user._id);
+    const files = req.files?.pictures;
+    let picturePath = [];
+    if (files) {
+        for (const file of files) {
             const uniqueName = Date.now() + "-" + file.originalname;
-            const key = `/posts/${userId}/${uniqueName}`;
+            const key = `posts/${req.user._id}/${uniqueName}`;
             const result = await mediaPost(file.buffer, key);
-            // const result = await uploadFile(file);
-            picturePath = result.Location;
+            picturePath.push(result.Location);
         }
-        const newPost = new Post({
-            userId,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            location: user.location,
-            description,
-            userPicturePath: user.picturePath,
-            picturePath: picturePath,
-            likes: {},
-            comments: [],
-        });
-        await newPost.save();
-        const post = await Post.find();
-        res.status(201).json(post);
-    } catch (error) {
-        res.status(409).json({ message: error.message });
     }
-};
+    const [newPost] = await Post.create(
+        [
+            {
+                userId: req.user._id,
+                userName:
+                    user.firstName + (user.lastName ? ` ${user.lastName}` : ""),
+                location: user.location,
+                description,
+                userPicturePath: user.picturePath,
+                picturePath: picturePath,
+                likes: {},
+                comments: [],
+            },
+        ],
+        { session }
+    );
+    const posts = await Post.find().session(session).sort({ createdAt: -1 });
+    const io = req.app.get("io");
+    io.emit("posts", {
+        posts: posts,
+    });
+    res.status(201).json({ success: true, message: "Post created" });
+});
 
 // READ
 
-export const getFeedPosts = async (req, res) => {
-    try {
-        const post = await Post.find();
-        res.status(200).json(post);
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-};
+export const getFeedPosts = asyncHandler(async (req, res) => {
+    const post = await Post.find().sort({ createdAt: -1 });
+    res.status(200).json(post);
+});
 
 export const getUserPosts = async (req, res) => {
     try {
