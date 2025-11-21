@@ -14,6 +14,7 @@ import { useLoginMutation } from "../../slices/userApi";
 import { loginSchema } from "../../validations/validations";
 import { useAuthStore } from "../../slices/authStore";
 import { connectSocket } from "../../socket/socket";
+import { useRequestStore } from "../../slices/requestStore";
 
 export default function LoginPage() {
     const theme = useTheme();
@@ -29,7 +30,8 @@ export default function LoginPage() {
         login,
         { data: loginData, isSuccess: loginSuccess, isLoading, isError, error },
     ] = useLoginMutation();
-    const { setAuth } = useAuthStore();
+    const setAuth = useAuthStore((state) => state.setAuth)
+    const setAccepted = useRequestStore((state) => state.setAccepted)
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -54,7 +56,18 @@ export default function LoginPage() {
         if (loginSuccess) {
             connectSocket();
             const { userObj } = loginData;
-            setAuth({ user: userObj });
+            const acceptedMap = {};
+            userObj.friends.forEach(f => {
+                acceptedMap[f.userId._id] = {
+                    name: `${f.userId.firstName}${
+                        f.userId.lastName ? ` ${f.userId.lastName}` : ""
+                    }`,
+                    profilePic: f.userId.picturePath,
+                }
+            })
+            setAccepted(acceptedMap )
+            const {friends, ...user} = userObj;
+            setAuth({ user });
             navigate("/home");
         }
     }, [loginSuccess, loginData]);

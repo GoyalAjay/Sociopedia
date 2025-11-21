@@ -35,7 +35,8 @@ export default function RegisterPage() {
     const isNonMobile = useMediaQuery("(min-width: 600px)");
     const navigate = useNavigate();
 
-    const { setAuth } = useAuthStore();
+    const setAuth = useAuthStore((state)=>state.setAuth)
+    // const { setAuth } = useAuthStore();
     const [register, { data, isSuccess, isLoading, error }] =
         useRegisterMutation();
 

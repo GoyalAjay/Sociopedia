@@ -10,7 +10,8 @@ import { getSocket } from "../../socket/socket";
 
 export default function HomePage() {
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-    const { user } = useAuthStore();
+    const user = useAuthStore((state) => state.user);
+    // const { user } = useAuthStore();
     const { _id, picturePath } = user;
 
     return (
@@ -37,7 +38,7 @@ export default function HomePage() {
                     <Box flexBasis="26%">
                         {/* <AdvertWidget /> */}
                         <Box m="2rem 0" />
-                        {/* <FriendListWidget userId={_id} /> */}
+                        <FriendListWidget userId={_id} />
                     </Box>
                 )}
             </Box>

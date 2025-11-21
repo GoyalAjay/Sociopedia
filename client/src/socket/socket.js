@@ -17,7 +17,7 @@ export const connectSocket = () => {
         upgrade: true, // allow upgrade
         path: "/socket.io",
     });
-    socket.on("connected", () => {
+    socket.on("connect", () => {
         console.log("Socket connected: ", socket.id);
     });
 

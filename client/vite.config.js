@@ -8,7 +8,7 @@ export default defineConfig({
         alias: {
             scenes: path.resolve(__dirname, "src/scenes"),
             components: path.resolve(__dirname, "src/components"),
-            state: path.resolve(__dirname, "src/state"),
+            // state: path.resolve(__dirname, "src/state"),
         },
     },
 });

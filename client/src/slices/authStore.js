@@ -1,7 +1,8 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
+import { useStore } from "zustand/react";
 
-export const useAuthStore = create(
+const authStore = createStore(
     persist(
         (set) => ({
             user: null,
@@ -11,3 +12,6 @@ export const useAuthStore = create(
         { name: "auth" }
     )
 );
+
+export const useAuthStore = (selector) =>
+    useStore(authStore, selector);

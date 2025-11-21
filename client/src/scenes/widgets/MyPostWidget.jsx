@@ -35,7 +35,8 @@ const MyPostWidget = ({ picturePath }) => {
     const [previews, setPreviews] = useState([]);
     const [post, setPost] = useState("");
     const { palette } = useTheme();
-    const { _id } = useAuthStore((state) => state.user);
+    const user = useAuthStore((state) => state.user);
+    const { _id } = user;
     const [createPost, { isLoading, error }] = useCreatePostMutation();
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");

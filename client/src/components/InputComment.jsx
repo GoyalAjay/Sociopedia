@@ -1,15 +1,15 @@
 import { InputBase, Button, useTheme } from "@mui/material";
 import UserImage from "./UserImage";
-import { useDispatch, useSelector } from "react-redux";
-import { setPost, setSinglePost } from "state";
+import { useAuthStore } from "../slices/authStore";
 import { useState } from "react";
 
 const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
     const [comment, setComment] = useState("");
-    const dispatch = useDispatch();
     const { palette } = useTheme();
-    const token = useSelector((state) => state.token);
-    const loggedInUser = useSelector((state) => state.user);
+    const user = useAuthStore((state)=> state.user);
+    // const {user} = useAuthStore();
+    // const token = useSelector((state) => state.token);
+    // const loggedInUser = useSelector((state) => state.user);
 
     const handleCommentPost = async () => {
         const response = await fetch(
@@ -28,14 +28,12 @@ const InputComment = ({ postId, loggedInUserId, userPicturePath }) => {
             }
         );
         const post = await response.json();
-        dispatch(setPost({ post }, setSinglePost({ post })));
         setComment("");
-        window.location.reload(true);
     };
 
     return (
         <>
-            <UserImage image={loggedInUser.picturePath} />
+            <UserImage image={user.picturePath} />
             <InputBase
                 placeholder="Write a comment..."
                 onChange={(event) => setComment(event.target.value)}

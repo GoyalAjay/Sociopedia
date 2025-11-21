@@ -17,8 +17,6 @@ import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setPost, setSinglePost } from "state";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../slices/authStore";
 import ImageCarousel from "../../components/ImageCarousel";
@@ -51,9 +49,8 @@ const PostWidget = ({
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const token = useSelector((state) => state.token);
-    const { user } = useAuthStore();
+    const user = useAuthStore((state)=> state.user);
+    // const { user } = useAuthStore();
     const loggedInUserId = user._id;
     const isLiked = Boolean(likes[loggedInUserId]);
     const likeCount = Object.keys(likes).length;
@@ -75,7 +72,6 @@ const PostWidget = ({
             }
         );
         const updatedPost = await response.json();
-        dispatch(setPost({ post: updatedPost }));
     };
 
     const getPost = async () => {
@@ -87,7 +83,6 @@ const PostWidget = ({
             }
         );
         const data = await response.json();
-        dispatch(setSinglePost({ post: data }));
     };
 
     return (

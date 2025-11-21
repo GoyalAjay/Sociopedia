@@ -1,7 +1,8 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
+import { useStore } from "zustand/react";
 
-export const useThemeStore = create(
+const themeStore = createStore(
     persist(
         (set, get) => ({
             mode: "light",
@@ -12,3 +13,6 @@ export const useThemeStore = create(
         { name: "theme" }
     )
 );
+
+export const useThemeStore = (selector) =>
+    useStore(themeStore, selector);

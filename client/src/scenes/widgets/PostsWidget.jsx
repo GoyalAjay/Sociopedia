@@ -17,15 +17,27 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         setPosts(initialPosts);
     }, [initialPosts]);
 
-    const socket = getSocket();
-    const handlePosts = (data) => {
-        // If server sends an entire array:
-        if (Array.isArray(data.posts)) {
-            setPosts(data.posts);
-            return;
-        }
-    };
-    socket.on("posts", handlePosts);
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const handlePosts = (data) => {
+            // If server sends an entire array:
+            if (Array.isArray(data.posts)) {
+                setPosts(data.posts);
+                return;
+            }
+
+            if (data.post) {
+                setPosts((prev) => [data.post, ...prev]);
+            }
+        };
+        socket.on("posts", handlePosts);
+
+        return () => {
+            socket.off("posts", handlePosts);
+        };
+    }, []);
 
     if (isLoading) return <div>Loading posts...</div>;
     if (error) return <div>Error fetching posts</div>;

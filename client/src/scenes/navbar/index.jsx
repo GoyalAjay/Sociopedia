@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+    Badge,
     Box,
     IconButton,
     InputBase,
@@ -17,23 +18,33 @@ import {
     DarkMode,
     LightMode,
     Notifications,
+    People,
     Help,
     Menu,
     Close,
 } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
-import { setMode, setLogout } from "state";
+
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import { useAuthStore } from "../../slices/authStore";
 import { useThemeStore } from "../../slices/themeStore";
+import { useRequestStore } from "../../slices/requestStore";
+import { getSocket } from "../../socket/socket";
+import useFriendRequests from "../../hooks/useFriendRequests";
+import FriendRequestPopover from "../../components/FriendRequestPopover";
 
 export default function Navbar() {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const {requests, handleAccept, handleRemove} = useFriendRequests();
+
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user, logout } = useAuthStore();
-    const { mode, toggleMode } = useThemeStore();
+    const user = useAuthStore((state)=> state.user);
+    const logout = useAuthStore((state)=> state.logout);
+    const clear = useRequestStore((state)=> state.clear);
+    const mode = useThemeStore((state)=> state.mode);
+    const toggleMode = useThemeStore((state)=> state.toggleMode);
+
     const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
 
     const theme = useTheme();
@@ -43,8 +54,20 @@ export default function Navbar() {
     const primaryLight = theme.palette.primary.light;
     const alt = theme.palette.background.alt;
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? "friend-requests-popover" : undefined;
+
     const handleLogout = () => {
         logout();
+        clear();
     };
 
     const fullName = `${user.firstName} ${user.lastName}`;
@@ -109,6 +132,18 @@ export default function Navbar() {
                         </IconButton>
                     </Tooltip>
 
+                    <Tooltip disableInteractive title="Friend Requests">
+                        <IconButton color="inherit" onClick={handleClick}>
+                            <Badge badgeContent={requests.length} color="error">
+                                <People
+                                    sx={{
+                                        fontSize: "25px",
+                                    }}
+                                />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
+                    <FriendRequestPopover open={open} anchorEl={anchorEl} onClose={handleClose} requests={requests} onAccept={handleAccept} onReject={handleRemove}/>
                     <Message
                         sx={{
                             fontSize: "25px",
@@ -190,7 +225,7 @@ export default function Navbar() {
                         gap="3rem"
                     >
                         <IconButton
-                            onClick={() => dispatch(setMode())}
+                            onClick={toggleMode}
                             sx={{ fontSize: "25px" }}
                         >
                             {theme.palette.mode === "dark" ? (
@@ -225,7 +260,7 @@ export default function Navbar() {
                                 <MenuItem value={fullName}>
                                     <Typography>{fullName}</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => dispatch(setLogout())}>
+                                <MenuItem onClick={handleLogout}>
                                     Log Out
                                 </MenuItem>
                             </Select>
