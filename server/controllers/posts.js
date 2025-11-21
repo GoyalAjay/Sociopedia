@@ -35,10 +35,10 @@ export const createPost = sessionAsyncHandler(async (req, res, session) => {
         ],
         { session }
     );
-    const posts = await Post.find().session(session).sort({ createdAt: -1 });
+    // const posts = await Post.find().session(session).sort({ createdAt: -1 });
     const io = req.app.get("io");
-    io.emit("posts", {
-        posts: posts,
+    io.to("global").emit("posts", {
+        post: newPost,
     });
     res.status(201).json({ success: true, message: "Post created" });
 });

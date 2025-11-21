@@ -89,6 +89,8 @@ export const register = sessionAsyncHandler(async (req, res, session) => {
 
     generateWebToken(res, newUser._id, newUser.uuid, newUser.tokenVersion);
 
+    await newUser.populate("friends.userId", "firstName lastName picturePath");
+
     const userObj = newUser.toObject();
     delete userObj.password;
     delete userObj.isLoggedIn;
@@ -104,7 +106,10 @@ export const login = sessionAsyncHandler(async (req, res, session) => {
     email = email.trim();
     password = password.trim();
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).populate(
+        "friends.userId",
+        "firstName lastName picturePath"
+    );
     if (!user) {
         throw new NotFoundError("User not found!!", {
             success: false,

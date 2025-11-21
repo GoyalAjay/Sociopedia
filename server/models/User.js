@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 const friendSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
+        unique: true,
+        sparse: true,
         ref: "User",
     },
 });
@@ -67,6 +69,22 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// userSchema.set("toObject", {
+//     transform: function (doc, ret) {
+//         if (Array.isArray(ret.friends)) {
+//             const result = {};
+//             ret.friends.forEach((f) => {
+//                 result[f.userId] = {
+//                     name: f.name,
+//                     profilePic: f.picturePath,
+//                 };
+//             });
+//             ret.friends = result;
+//         }
+//         return ret;
+//     },
+// });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);

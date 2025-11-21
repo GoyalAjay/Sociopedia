@@ -59,6 +59,7 @@ app.use(
                       imgSrc: ["'self'", "data:", "https:"],
                       connectSrc: [
                           "'self'",
+                          "http://localhost:5173",
                           "https://sociopedia-backend-9jo5.onrender.com",
                       ],
                       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -79,7 +80,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 
@@ -88,6 +89,7 @@ const io = new Server(server, {
     cors: {
         origin: corsOptions.origin,
         methods: corsOptions.methods,
+        credentials: corsOptions.credentials,
     },
 });
 
